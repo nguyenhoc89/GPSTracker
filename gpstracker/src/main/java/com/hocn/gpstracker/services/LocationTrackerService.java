@@ -11,7 +11,7 @@ import com.hocn.gpstracker.LocationTrackerManager;
 
 public class LocationTrackerService extends Service {
     private boolean running = false;
-    private LocationTrackerManager trackerManager;
+    private LocationTrackerManager trackerManager = null;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -20,19 +20,25 @@ public class LocationTrackerService extends Service {
         }
         running = true;
 
-        trackerManager = new LocationTrackerManager(this);
-        trackerManager.initTracker();
-        trackerManager.startTracker();
-        trackerManager.setLocationTrackerListener(new LocationTrackerManager.ILocationTracker() {
-            @Override
-            public void onLocationChanged(Location location) {
-            }
+        if (trackerManager == null) {
+            trackerManager = new LocationTrackerManager(this);
+            trackerManager.initTracker();
+            trackerManager.startTracker();
+            trackerManager.setLocationTrackerListener(new LocationTrackerManager.ILocationTracker() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    Intent intent = new Intent("com.hocn.gpstracker.LOCATION_RECEIVE");
+                    intent.putExtra("lat", location.getLatitude());
+                    intent.putExtra("lon", location.getLongitude());
+                    LocationTrackerService.this.sendBroadcast(intent);
+                }
 
-            @Override
-            public void onLocationSettingChangeUnavailable() {
+                @Override
+                public void onLocationSettingChangeUnavailable() {
 
-            }
-        });
+                }
+            });
+        }
 
         return START_STICKY;
     }
@@ -42,6 +48,7 @@ public class LocationTrackerService extends Service {
         super.onDestroy();
         // Stop location tracker
         trackerManager.stopTracker();
+        trackerManager = null;
         running = false;
     }
 

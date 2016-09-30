@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.hocn.gpstracker.LocationTrackerManager;
+import com.hocn.gpstracker.LocationTrackerServiceManager;
 
 public class MainActivity extends AppCompatActivity {
     private LocationTrackerManager trackerManager;
@@ -16,7 +17,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initLocationTracker();
+        //initLocationTracker();
+
+        LocationTrackerServiceManager.getInstances().addLocationTrackerListener(new LocationTrackerServiceManager.ILocationTracker() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.d("iii", location.toString());
+            }
+        });
     }
 
     private void initLocationTracker() {
@@ -44,11 +52,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         if (trackerManager != null) {
             trackerManager.stopTracker();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override

@@ -67,6 +67,11 @@ public class LegacyTracker extends BaseTracker implements LocationListener {
     }
 
     @Override
+    public Location getLastKnowLocation() {
+        return null;
+    }
+
+    @Override
     public void onLocationChanged(Location location) {
         LogUtil.logDebug("Location: " + location);
     }

@@ -59,6 +59,15 @@ public class GGTracker extends BaseTracker implements GoogleApiClient.Connection
     }
 
     @Override
+    public Location getLastKnowLocation() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return null;
+        }
+        return LocationServices.FusedLocationApi
+                .getLastLocation(mGoogleApiClient);
+    }
+
+    @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -72,6 +81,7 @@ public class GGTracker extends BaseTracker implements GoogleApiClient.Connection
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                LocationTrackerManager.setCurrentLocation(location);
                 mTrackerManager.onLocationChanged(location);
             }
         });
@@ -115,8 +125,10 @@ public class GGTracker extends BaseTracker implements GoogleApiClient.Connection
                         try {
                             // Show the dialog by calling startResolutionForResult(),
                             // and check the result in onActivityResult().
-                            status.startResolutionForResult(
-                                    (Activity) mContext, LocationTrackerManager.RESULT_CODE_SETTING_LOCATION_ACTIVITY);
+                            if (mContext instanceof Activity) {
+                                status.startResolutionForResult(
+                                        (Activity) mContext, LocationTrackerManager.RESULT_CODE_SETTING_LOCATION_ACTIVITY);
+                            }
                         } catch (IntentSender.SendIntentException e) {
                             // Ignore the error.
                             mTrackerManager.onLocationSettingChangeUnavailable();

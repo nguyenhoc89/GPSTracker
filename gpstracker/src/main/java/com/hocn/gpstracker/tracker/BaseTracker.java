@@ -1,6 +1,7 @@
 package com.hocn.gpstracker.tracker;
 
 import android.content.Context;
+import android.location.Location;
 
 import com.hocn.gpstracker.LocationTrackerManager;
 
@@ -18,4 +19,5 @@ public abstract class BaseTracker {
 
     public abstract void startTracker();
     public abstract void stopTracker();
+    public abstract Location getLastKnowLocation();
 }

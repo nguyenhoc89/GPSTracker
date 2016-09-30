@@ -11,6 +11,9 @@ import com.hocn.gpstracker.util.TrackerUtil;
 
 public class LocationTrackerManager {
     public static final int RESULT_CODE_SETTING_LOCATION_ACTIVITY = 1000;
+    private static Location currentLocation;
+    private static Object synObj = new Object();
+
     private Context mContext;
     private BaseTracker tracker;
 
@@ -55,5 +58,17 @@ public class LocationTrackerManager {
 
     public void setLocationTrackerListener(ILocationTracker locationTrackerListener) {
         this.locationTrackerListener = locationTrackerListener;
+    }
+
+    public static Location getCurrentLocation() {
+        synchronized (synObj) {
+            return currentLocation;
+        }
+    }
+
+    public static void setCurrentLocation(Location currentLocation) {
+        synchronized (synObj) {
+            LocationTrackerManager.currentLocation = currentLocation;
+        }
     }
 }

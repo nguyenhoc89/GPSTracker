@@ -74,7 +74,7 @@ public void onTerminate() {
 }
 ```
 
-Add listener in your activity
+Add event listener code to your activity
 
 ```java
 LocationTrackerServiceManager.getInstances().addLocationTrackerListener(new LocationTrackerServiceManager.ILocationTracker() {
